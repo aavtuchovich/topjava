@@ -36,7 +36,7 @@ public class UserMealsUtil {
 				().toLocalDate(), Collectors.summingInt(UserMeal::getCalories)));
 		return mealList.stream()
 				//filtered by time all user meals
-				.filter(s -> s.getDateTime().toLocalTime().isAfter(startTime) && s.getDateTime().toLocalTime().isBefore(endTime))
+				.filter(s -> TimeUtil.isBetween(s.getDateTime().toLocalTime(), startTime, endTime))
 				//create new object UserMealWithExceed for filtered object
 				.map((meal) -> new UserMealWithExceed(meal.getDateTime(), meal.getDescription(), meal.getCalories(),
 						//get current day calories and check daily limit
