@@ -31,18 +31,20 @@ public class UserMealsUtilTest {
 
 	@Test
 	public void getFilteredWithExceeded() throws Exception {
-		int count = 1000000;
+		int count = 10000000;
 		initArrayList(count);
 		Long startTime = System.currentTimeMillis();
 		UserMealsUtil.getFilteredWithExceeded(userMeals, LocalTime.of(7, 0), LocalTime.of(12, 0), 2000);
 		System.out.println("Время выполнения " + userMeals.size() + " записей :" + (System.currentTimeMillis() - startTime));
-		startTime = System.currentTimeMillis();
+
 		initArrayList(count);
+		startTime = System.currentTimeMillis();
 		UserMealsUtil.getFilteredWithExceeded(userMeals, LocalTime.of(7, 0), LocalTime.of(12, 0), 2000);
 		System.out.println("Время выполнения " + userMeals.size() + " записей :" + (System.currentTimeMillis() - startTime));
+
+		initArrayList(count * 2);
 		startTime = System.currentTimeMillis();
 		UserMealsUtil.getFilteredWithExceeded(userMeals, LocalTime.of(7, 0), LocalTime.of(12, 0), 2000);
-		initArrayList(count * 2);
 		System.out.println("Время выполнения " + userMeals.size() + " записей :" + (System.currentTimeMillis() - startTime));
 	}
 
