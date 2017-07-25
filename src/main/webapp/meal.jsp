@@ -7,6 +7,7 @@
 </head>
 <body>
 <form method="post" action="meals">
+    <input type="hidden" name="id" value="${meal.id}">
     <label for="dateTime">DateTime</label><input type="datetime-local" name="dateTime" id="dateTime"
                                                  value="${meal.dateTime}"><br/>
     <label for="description">Description</label><input type="text" name="description" id="description"
