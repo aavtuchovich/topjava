@@ -13,5 +13,5 @@ public interface MealRepository {
 
     Collection<Meal> getAll();
 
-    Collection<Meal> getByUserId(int userId);
+    Collection<Meal> getAllByUserId(int userId);
 }
