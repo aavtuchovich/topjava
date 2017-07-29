@@ -24,7 +24,7 @@ import java.util.Objects;
 
 public class MealServlet extends HttpServlet {
 	private static final Logger log = LoggerFactory.getLogger(MealServlet.class);
-
+	ConfigurableApplicationContext appCtx = new ClassPathXmlApplicationContext("spring/spring-app.xml");
 	private MealRepository repository;
 
 	@Override
@@ -41,7 +41,7 @@ public class MealServlet extends HttpServlet {
 			String toDate = request.getParameter("toDate");
 			String fromTime = request.getParameter("fromTime");
 			String toTime = request.getParameter("toTime");
-			try (ConfigurableApplicationContext appCtx = new ClassPathXmlApplicationContext("spring/spring-app.xml")) {
+
 				MealRestController mealRestController = appCtx.getBean(MealRestController.class);
 				LocalDateTime fromDateTime = LocalDateTime.of(fromDate.isEmpty() ? LocalDate.MIN : LocalDate.parse(fromDate), fromTime.isEmpty() ? LocalTime.MIN : LocalTime.parse(fromTime));
 				LocalDateTime toDateTime = LocalDateTime.of(toDate.isEmpty() ? LocalDate.MAX : LocalDate.parse(toDate), toTime.isEmpty() ? LocalTime.MAX : LocalTime.parse(toTime));
@@ -49,7 +49,7 @@ public class MealServlet extends HttpServlet {
 				System.out.println(toDateTime);
 				request.setAttribute("meals", mealRestController.filterMealByDate(fromDateTime, toDateTime));
 				request.getRequestDispatcher("/meals.jsp").forward(request, response);
-			}
+
 		} else {
 			String id = request.getParameter("id");
 			Meal meal = new Meal(id.isEmpty() ? null : Integer.valueOf(id),
@@ -65,7 +65,6 @@ public class MealServlet extends HttpServlet {
 
 	@Override
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		try (ConfigurableApplicationContext appCtx = new ClassPathXmlApplicationContext("spring/spring-app.xml")) {
 			MealRestController mealRestController = appCtx.getBean(MealRestController.class);
 
 			String action = request.getParameter("action");
@@ -93,6 +92,12 @@ public class MealServlet extends HttpServlet {
 					break;
 			}
 		}
+
+
+	@Override
+	public void destroy() {
+		appCtx.close();
+		super.destroy();
 	}
 
 	private int getId(HttpServletRequest request) {
