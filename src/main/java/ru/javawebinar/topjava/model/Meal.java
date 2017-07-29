@@ -5,8 +5,6 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 
 public class Meal extends BaseEntity {
-	private Integer id;
-
 	private Integer userId;
 
 	private final LocalDateTime dateTime;
@@ -32,14 +30,6 @@ public class Meal extends BaseEntity {
 
 	}
 
-	public Integer getId() {
-		return id;
-	}
-
-	public void setId(Integer id) {
-		this.id = id;
-	}
-
 	public LocalDateTime getDateTime() {
 		return dateTime;
 	}
@@ -58,10 +48,6 @@ public class Meal extends BaseEntity {
 
 	public LocalTime getTime() {
 		return dateTime.toLocalTime();
-	}
-
-	public boolean isNew() {
-		return id == null;
 	}
 
 	@Override
