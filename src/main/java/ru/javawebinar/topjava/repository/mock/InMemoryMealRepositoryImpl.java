@@ -4,6 +4,7 @@ import org.springframework.stereotype.Service;
 import ru.javawebinar.topjava.model.Meal;
 import ru.javawebinar.topjava.repository.MealRepository;
 import ru.javawebinar.topjava.util.MealsUtil;
+import ru.javawebinar.topjava.util.exception.NotFoundException;
 
 import java.util.Collection;
 import java.util.Comparator;
@@ -31,16 +32,18 @@ public class InMemoryMealRepositoryImpl implements MealRepository {
 	}
 
 	@Override
-	public void delete(int id) {
-		repository.remove(id);
+	public void delete(int id) throws NotFoundException {
+		if (repository.remove(id) == null) {
+			throw new NotFoundException("Failed remove meal");
+		}
 	}
 
 	@Override
-	public Meal get(int id) {
+	public Meal get(int id) throws NotFoundException {
 		if (repository.containsKey(id)) {
 			return repository.get(id);
 		}
-		return null;
+		throw new NotFoundException("Meal not found");
 	}
 
 	@Override
