@@ -5,7 +5,6 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringRunner;
 import ru.javawebinar.topjava.UserTestData;
@@ -20,35 +19,35 @@ import static ru.javawebinar.topjava.UserTestData.ADMIN;
 import static ru.javawebinar.topjava.UserTestData.USER;
 
 @ContextConfiguration({
-		"classpath:spring/spring-app.xml",
+		"classpath:spring/spring-app-test.xml",
 		"classpath:spring/spring-db.xml"
 })
 @RunWith(SpringRunner.class)
 public class InMemoryAdminRestControllerSpringTest {
 
-    @Autowired
-    private AdminRestController controller;
+	@Autowired
+	private AdminRestController controller;
 
 	@Autowired
 	private UserRepository repository;
 
-    @Before
-    public void setUp() throws Exception {
-        repository.getAll().forEach(u -> repository.delete(u.getId()));
-        repository.save(USER);
-        repository.save(ADMIN);
-    }
+	@Before
+	public void setUp() throws Exception {
+		repository.getAll().forEach(u -> repository.delete(u.getId()));
+		repository.save(USER);
+		repository.save(ADMIN);
+	}
 
-    @Test
-    public void testDelete() throws Exception {
-        controller.delete(UserTestData.USER_ID);
-        Collection<User> users = controller.getAll();
-        Assert.assertEquals(users.size(), 1);
-        Assert.assertEquals(users.iterator().next(), ADMIN);
-    }
+	@Test
+	public void testDelete() throws Exception {
+		controller.delete(UserTestData.USER_ID);
+		Collection<User> users = controller.getAll();
+		Assert.assertEquals(users.size(), 1);
+		Assert.assertEquals(users.iterator().next(), ADMIN);
+	}
 
-    @Test(expected = NotFoundException.class)
-    public void testDeleteNotFound() throws Exception {
-        controller.delete(10);
-    }
+	@Test(expected = NotFoundException.class)
+	public void testDeleteNotFound() throws Exception {
+		controller.delete(10);
+	}
 }
