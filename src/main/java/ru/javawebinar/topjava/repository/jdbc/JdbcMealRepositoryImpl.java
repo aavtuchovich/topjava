@@ -12,8 +12,6 @@ import ru.javawebinar.topjava.model.Meal;
 import ru.javawebinar.topjava.repository.MealRepository;
 
 import javax.sql.DataSource;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -22,7 +20,6 @@ public class JdbcMealRepositoryImpl implements MealRepository {
 	private static final BeanPropertyRowMapper<Meal> ROW_MAPPER = BeanPropertyRowMapper.newInstance(Meal.class);
 	private final JdbcTemplate jdbcTemplate;
 	private final NamedParameterJdbcTemplate namedParameterJdbcTemplate;
-	private final DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 	private final SimpleJdbcInsert insertMeal;
 
 	@Autowired
@@ -67,6 +64,6 @@ public class JdbcMealRepositoryImpl implements MealRepository {
 
 	@Override
 	public List<Meal> getBetween(LocalDateTime startDate, LocalDateTime endDate, int userId) {
-		return jdbcTemplate.query("SELECT FROM meals WHERE user_id=? AND datetime BETWEEN ? AND ?", ROW_MAPPER, userId, dateFormat.format(startDate), dateFormat.format(endDate));
+		return jdbcTemplate.query("SELECT id,datetime,description,calories FROM meals WHERE user_id=? AND datetime BETWEEN ? AND ? ORDER BY datetime ASC ", ROW_MAPPER, userId, startDate, endDate);
 	}
 }
