@@ -16,7 +16,7 @@
         <input type="hidden" name="id" value="${meal.id}">
         <dl>
             <dt>DateTime:</dt>
-            <dd><input type="datetime-local" value="${meal.dateTime}" name="dateTime"></dd>
+            <dd><input type="datetime-local" value="${meal.dateTime.withNano(0).withSecond(0)}" name="dateTime"></dd>
         </dl>
         <dl>
             <dt>Description:</dt>
