@@ -8,7 +8,6 @@ import ru.javawebinar.topjava.repository.MealRepository;
 import ru.javawebinar.topjava.util.exception.NotFoundException;
 
 import javax.persistence.EntityManager;
-import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -22,9 +21,11 @@ public class JpaMealRepositoryImpl implements MealRepository {
 
 	@Override
 	@Transactional
-	public Meal save(Meal meal, int userId) throws NotFoundException{
-		User ref = em.getReference(User.class, userId);
-		meal.setUser(ref);
+	public Meal save(Meal meal, int userId) throws NotFoundException {
+		if (!meal.isNew() && get(meal.getId(), userId) == null) {
+			return null;
+		}
+		meal.setUser(em.getReference(User.class, userId));
 		if (meal.isNew()) {
 			em.persist(meal);
 			return meal;
@@ -41,11 +42,8 @@ public class JpaMealRepositoryImpl implements MealRepository {
 
 	@Override
 	public Meal get(int id, int userId) throws NotFoundException {
-		try {
-			return (Meal) em.createQuery("select m from Meal m where m.id=:id AND m.user.id=:userId").setParameter("id", id).setParameter("userId", userId).getSingleResult();
-		} catch (NoResultException ex) {
-			throw new NotFoundException("Meal not found");
-		}
+		Meal meal = em.find(Meal.class, id);
+		return meal != null && meal.getUser().getId() == userId ? meal : null;
 	}
 
 	@Override
@@ -55,6 +53,6 @@ public class JpaMealRepositoryImpl implements MealRepository {
 
 	@Override
 	public List<Meal> getBetween(LocalDateTime startDate, LocalDateTime endDate, int userId) {
-		return em.createNamedQuery(Meal.GET_BETWEEN,Meal.class).setParameter("userId",userId).setParameter("startDate",startDate).setParameter("endDate",endDate).getResultList();
+		return em.createNamedQuery(Meal.GET_BETWEEN, Meal.class).setParameter("userId", userId).setParameter("startDate", startDate).setParameter("endDate", endDate).getResultList();
 	}
 }
