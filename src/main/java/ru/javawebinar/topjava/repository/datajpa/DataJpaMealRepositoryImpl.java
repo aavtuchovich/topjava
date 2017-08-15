@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Profile;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 import ru.javawebinar.topjava.model.Meal;
 import ru.javawebinar.topjava.repository.MealRepository;
 
@@ -14,7 +15,6 @@ import java.util.List;
 @Profile("datajpa")
 public class DataJpaMealRepositoryImpl implements MealRepository {
 
-	private static final Sort SORT_BY_DATETIME = new Sort("date_time");
 	@Autowired
 	private CrudMealRepository crudRepository;
 	@Autowired
@@ -31,7 +31,7 @@ public class DataJpaMealRepositoryImpl implements MealRepository {
 
 	@Override
 	public boolean delete(int id, int userId) {
-		return crudRepository.delete(id, userId);
+		return crudRepository.delete(id,userId) != 0;
 	}
 
 	@Override
@@ -42,7 +42,7 @@ public class DataJpaMealRepositoryImpl implements MealRepository {
 
 	@Override
 	public List<Meal> getAll(int userId) {
-		return crudRepository.getAll(userId);
+		return crudRepository.findAll(userId);
 	}
 
 	@Override
