@@ -19,15 +19,18 @@ import ru.javawebinar.topjava.ActiveDbProfileResolver;
 import ru.javawebinar.topjava.model.Meal;
 import ru.javawebinar.topjava.util.exception.NotFoundException;
 
+import javax.validation.ConstraintViolationException;
 import java.time.LocalDate;
 import java.time.Month;
 import java.util.Arrays;
 import java.util.concurrent.TimeUnit;
 
+import static java.time.LocalDateTime.of;
 import static org.slf4j.LoggerFactory.getLogger;
 import static ru.javawebinar.topjava.MealTestData.*;
 import static ru.javawebinar.topjava.UserTestData.ADMIN_ID;
 import static ru.javawebinar.topjava.UserTestData.USER_ID;
+import static ru.javawebinar.topjava.service.AbstractServiceTest.validateRootCause;
 
 @ContextConfiguration({
         "classpath:spring/spring-app.xml",
@@ -36,7 +39,7 @@ import static ru.javawebinar.topjava.UserTestData.USER_ID;
 @RunWith(SpringRunner.class)
 @Sql(scripts = "classpath:db/populateDB.sql", config = @SqlConfig(encoding = "UTF-8"))
 @ActiveProfiles(resolver = ActiveDbProfileResolver.class)
-public class MealServiceTest {
+public class AbstractMealServiceTest {
     private static final Logger resultLog = getLogger("result");
 
     private static StringBuilder results = new StringBuilder();
@@ -70,7 +73,7 @@ public class MealServiceTest {
     }
 
     @Autowired
-    private MealService service;
+    protected MealService service;
 
     @Test
     public void testDelete() throws Exception {
@@ -128,5 +131,13 @@ public class MealServiceTest {
                 service.getBetweenDates(
                         LocalDate.of(2015, Month.MAY, 30),
                         LocalDate.of(2015, Month.MAY, 30), USER_ID));
+    }
+
+    @Test
+    public void testValidation() throws Exception {
+        validateRootCause(() -> service.create(new Meal(null, of(2015, Month.JUNE, 1, 18, 0), "  ", 300), USER_ID), ConstraintViolationException.class);
+        validateRootCause(() -> service.create(new Meal(null, null, "Description", 300), USER_ID), ConstraintViolationException.class);
+        validateRootCause(() -> service.create(new Meal(null, of(2015, Month.JUNE, 1, 18, 0), "Description", 9), USER_ID), ConstraintViolationException.class);
+        validateRootCause(() -> service.create(new Meal(null, of(2015, Month.JUNE, 1, 18, 0), "Description", 5001), USER_ID), ConstraintViolationException.class);
     }
 }
