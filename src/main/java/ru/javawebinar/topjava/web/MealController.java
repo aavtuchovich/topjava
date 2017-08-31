@@ -29,6 +29,7 @@ import static ru.javawebinar.topjava.util.DateTimeUtil.parseLocalDate;
 import static ru.javawebinar.topjava.util.DateTimeUtil.parseLocalTime;
 
 @Controller
+@RequestMapping("meals")
 public class MealController extends MealRestController {
 	@Autowired
 	public MealController(MealService service) {
@@ -39,7 +40,7 @@ public class MealController extends MealRestController {
 	@RequestMapping(value = "/delete", method = RequestMethod.GET)
 	public String remove(@RequestParam("id") int id) {
 		delete(id);
-		return "redirect:meals";
+		return "redirect:/meals";
 	}
 
 	@RequestMapping(value = "/save", method = RequestMethod.POST)
@@ -53,14 +54,14 @@ public class MealController extends MealRestController {
 		} else {
 			update(meal, Integer.parseInt(getId(request)));
 		}
-		return "redirect:meals";
+		return "redirect:/meals";
 	}
 
 	private String getId(HttpServletRequest request) {
 		return request.getParameter("id");
 	}
 
-	@RequestMapping(value = "filter", method = RequestMethod.POST)
+	@RequestMapping(value = "/filter", method = RequestMethod.POST)
 	public String filter(Model model, HttpServletRequest request) {
 		LocalDate startDate = parseLocalDate(request.getParameter("startDate"));
 		LocalDate endDate = parseLocalDate(request.getParameter("endDate"));
@@ -85,7 +86,7 @@ public class MealController extends MealRestController {
 		return "mealForm";
 	}
 
-	@RequestMapping(value = "/meals", method = RequestMethod.GET)
+	@RequestMapping(method = RequestMethod.GET)
 	public String getAll(Model model) {
 		model.addAttribute("meals", getAll());
 		return "meals";

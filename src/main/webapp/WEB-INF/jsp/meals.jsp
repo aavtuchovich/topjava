@@ -1,4 +1,4 @@
-<%@ page contentType="text/html;charset=UTF-8" language="java" %>
+<%@ page contentType="text/html;charset=UTF-8" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <%@ taglib prefix="fn" uri="http://topjava.javawebinar.ru/functions" %>
@@ -8,7 +8,7 @@
 <jsp:include page="fragments/bodyHeader.jsp"/>
 <section>
     <h3>Meals</h3>
-    <form method="post" action="filter">
+    <form method="post" action="${pageContext.request.contextPath}/meals/filter">
         <dl>
             <dt>From Date:</dt>
             <dd><input type="date" name="startDate" value="${param.startDate}"></dd>
@@ -28,7 +28,7 @@
         <button type="submit">Filter</button>
     </form>
     <hr/>
-    <a href="create">Add Meal</a>
+    <a href="meals/create">Add Meal</a>
     <hr/>
     <table border="1" cellpadding="8" cellspacing="0">
         <thead>
@@ -40,7 +40,7 @@
         </tr>
         </thead>
         <c:forEach items="${meals}" var="meal">
-            <jsp:useBean id="meal" scope="page" type="ru.javawebinar.topjava.to.MealWithExceed"/>
+            <jsp:useBean id="meal" type="ru.javawebinar.topjava.to.MealWithExceed"/>
             <tr class="${meal.exceed ? 'exceeded' : 'normal'}">
                 <td>
                         <%--${meal.dateTime.toLocalDate()} ${meal.dateTime.toLocalTime()}--%>
@@ -50,8 +50,8 @@
                 </td>
                 <td>${meal.description}</td>
                 <td>${meal.calories}</td>
-                <td><a href="update?id=${meal.id}">Update</a></td>
-                <td><a href="delete?id=${meal.id}">Delete</a></td>
+                <td><a href="meals/update?id=${meal.id}">Update</a></td>
+                <td><a href="meals/delete?id=${meal.id}">Delete</a></td>
             </tr>
         </c:forEach>
     </table>
