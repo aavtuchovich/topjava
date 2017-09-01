@@ -4,9 +4,7 @@ import ru.javawebinar.topjava.matcher.BeanMatcher;
 import ru.javawebinar.topjava.model.Role;
 import ru.javawebinar.topjava.model.User;
 
-import java.util.Collections;
 import java.util.Objects;
-import java.util.Set;
 
 import static ru.javawebinar.topjava.model.AbstractBaseEntity.START_SEQ;
 
