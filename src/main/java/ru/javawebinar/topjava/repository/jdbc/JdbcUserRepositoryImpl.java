@@ -22,12 +22,25 @@ import java.util.*;
 public class JdbcUserRepositoryImpl implements UserRepository {
 
 	private static final BeanPropertyRowMapper<User> ROW_MAPPER = BeanPropertyRowMapper.newInstance(User.class);
-	private static final ResultSetExtractor RESULT_SET_EXTRACTOR = (ResultSetExtractor) rs -> {
+	private static final ResultSetExtractor<List<User>> RESULT_SET_EXTRACTOR = rs -> {
 		Map<Integer, User> usersMap = new HashMap<>();
 		while (rs.next()) {
-			usersMap.putIfAbsent(rs.getInt("id"), new User(rs.getInt("id"), rs.getString("name"), rs.getString("email"), rs.getString("password"), rs.getInt("calories_per_day"), rs.getBoolean("enabled"), Collections.singleton(Role.valueOf(rs.getString("role")))));
+			if (!usersMap.containsKey(rs.getInt("id"))) {
+				HashSet<Role> user_roles = new HashSet<>();
+				user_roles.add(Role.valueOf(rs.getString("role")));
+				usersMap.putIfAbsent(rs.getInt("id"),
+						new User(rs.getInt("id"),
+								rs.getString("name"),
+								rs.getString("email"),
+								rs.getString("password"),
+								rs.getInt("calories_per_day"),
+								rs.getBoolean("enabled"),
+								user_roles));
+			} else {
+				usersMap.get(rs.getInt("id")).getRoles().add(Role.valueOf(rs.getString("role")));
+			}
 		}
-		return new ArrayList<User>(usersMap.values());
+		return new ArrayList<>(usersMap.values());
 	};
 
 	private final JdbcTemplate jdbcTemplate;
@@ -69,19 +82,19 @@ public class JdbcUserRepositoryImpl implements UserRepository {
 
 	@Override
 	public User get(int id) {
-		List<User> users = (ArrayList<User>) jdbcTemplate.query("SELECT users.*,user_roles.role FROM users,user_roles WHERE id=? AND users.id=user_roles.user_id", RESULT_SET_EXTRACTOR, id);
+		List<User> users = jdbcTemplate.query("SELECT users.*,user_roles.role FROM users,user_roles WHERE id=? AND users.id=user_roles.user_id", RESULT_SET_EXTRACTOR, id);
 		return DataAccessUtils.singleResult(users);
 	}
 
 	@Override
 	public User getByEmail(String email) {
 //        return jdbcTemplate.queryForObject("SELECT * FROM users WHERE email=?", ROW_MAPPER, email);
-		List<User> users = (List<User>) jdbcTemplate.query("SELECT * FROM users,user_roles WHERE email=? AND users.id=user_roles.user_id", RESULT_SET_EXTRACTOR, email);
+		List<User> users = jdbcTemplate.query("SELECT * FROM users,user_roles WHERE email=? AND users.id=user_roles.user_id", RESULT_SET_EXTRACTOR, email);
 		return DataAccessUtils.singleResult(users);
 	}
 
 	@Override
 	public List<User> getAll() {
-		return (List<User>) jdbcTemplate.query("SELECT * FROM users,user_roles WHERE users.id=user_roles.user_id ORDER BY name, email", RESULT_SET_EXTRACTOR);
+		return jdbcTemplate.query("SELECT * FROM users,user_roles WHERE users.id=user_roles.user_id ORDER BY name, email", RESULT_SET_EXTRACTOR);
 	}
 }
