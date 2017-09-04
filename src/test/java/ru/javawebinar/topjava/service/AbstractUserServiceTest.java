@@ -13,6 +13,7 @@ import javax.validation.ConstraintViolationException;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.List;
 
 import static ru.javawebinar.topjava.UserTestData.*;
 

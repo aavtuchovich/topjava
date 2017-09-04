@@ -2,6 +2,7 @@ package ru.javawebinar.topjava.repository.jdbc;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.support.DataAccessUtils;
+import org.springframework.jdbc.core.BatchPreparedStatementSetter;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.ResultSetExtractor;
@@ -15,15 +16,17 @@ import ru.javawebinar.topjava.model.User;
 import ru.javawebinar.topjava.repository.UserRepository;
 
 import javax.sql.DataSource;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
 import java.util.*;
 
 @Repository
 @Transactional(readOnly = true)
 public class JdbcUserRepositoryImpl implements UserRepository {
 
-	private static final BeanPropertyRowMapper<User> ROW_MAPPER = BeanPropertyRowMapper.newInstance(User.class);
 	private static final ResultSetExtractor<List<User>> RESULT_SET_EXTRACTOR = rs -> {
 		Map<Integer, User> usersMap = new HashMap<>();
+		LinkedList userResult = new LinkedList();
 		while (rs.next()) {
 			if (!usersMap.containsKey(rs.getInt("id"))) {
 				HashSet<Role> user_roles = new HashSet<>();
@@ -36,11 +39,12 @@ public class JdbcUserRepositoryImpl implements UserRepository {
 								rs.getInt("calories_per_day"),
 								rs.getBoolean("enabled"),
 								user_roles));
+				userResult.add(usersMap.get(rs.getInt("id")));
 			} else {
 				usersMap.get(rs.getInt("id")).getRoles().add(Role.valueOf(rs.getString("role")));
 			}
 		}
-		return new ArrayList<>(usersMap.values());
+		return userResult;
 	};
 
 	private final JdbcTemplate jdbcTemplate;
@@ -62,10 +66,24 @@ public class JdbcUserRepositoryImpl implements UserRepository {
 	@Override
 	public User save(User user) {
 		BeanPropertySqlParameterSource parameterSource = new BeanPropertySqlParameterSource(user);
-
 		if (user.isNew()) {
 			Number newKey = insertUser.executeAndReturnKey(parameterSource);
 			user.setId(newKey.intValue());
+			String sql = "INSERT INTO user_roles (user_id,role) VALUES (?, ?)";
+			List<Role> user_roles = new ArrayList<>(user.getRoles());
+			jdbcTemplate.batchUpdate(sql, new BatchPreparedStatementSetter() {
+				@Override
+				public void setValues(PreparedStatement ps, int i) throws SQLException {
+					Role role = user_roles.get(i);
+					ps.setInt(1, user.getId());
+					ps.setString(2, role.name());
+				}
+
+				@Override
+				public int getBatchSize() {
+					return user_roles.size();
+				}
+			});
 		} else {
 			namedParameterJdbcTemplate.update(
 					"UPDATE users SET name=:name, email=:email, password=:password, " +
