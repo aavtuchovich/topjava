@@ -48,7 +48,6 @@ public class MealRestControllerTest extends AbstractControllerTest {
 
 	@Test
 	public void create() throws Exception {
-		// TODO: 22.09.2017 Added test create
 		Meal expectedMeal = new Meal(LocalDateTime.parse("2017-12-03T10:15:30"), "new meal test", 2000);
 		ResultActions action = mockMvc.perform(post(REST_URL)
 				.contentType(MediaType.APPLICATION_JSON)
