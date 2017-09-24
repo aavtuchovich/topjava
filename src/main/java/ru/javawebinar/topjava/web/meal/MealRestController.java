@@ -2,10 +2,13 @@ package ru.javawebinar.topjava.web.meal;
 
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import ru.javawebinar.topjava.model.Meal;
 import ru.javawebinar.topjava.to.MealWithExceed;
 
+import java.net.URI;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
@@ -33,10 +36,13 @@ public class MealRestController extends AbstractMealController {
 		super.delete(id);
 	}
 
-	@Override
 	@PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-	public Meal create(@RequestBody Meal meal) {
-		return super.create(meal);
+	public ResponseEntity<Meal> createWithLocation(@RequestBody Meal meal) {
+		Meal created = super.create(meal);
+		URI uriOfNewResource = ServletUriComponentsBuilder.fromCurrentContextPath()
+				.path(REST_URL + "/{id}")
+				.buildAndExpand(created.getId()).toUri();
+		return ResponseEntity.created(uriOfNewResource).body(created);
 	}
 
 	@Override
@@ -47,7 +53,7 @@ public class MealRestController extends AbstractMealController {
 
 	@Override
 	@GetMapping(value = "/getBetween", produces = MediaType.APPLICATION_JSON_VALUE)
-	public List<MealWithExceed> getBetween(@RequestParam("startDate") @DateTimeFormat(pattern="yyyy-MM-dd") LocalDate startDate, @RequestParam("startTime") LocalTime startTime, @RequestParam("endDate") @DateTimeFormat(pattern="yyyy-MM-dd") LocalDate endDate, @RequestParam("endTime") LocalTime endTime) {
+	public List<MealWithExceed> getBetween(@RequestParam(value = "startDate", required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate startDate, @RequestParam(value = "startTime", required = false) LocalTime startTime, @RequestParam(value = "endDate", required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate endDate, @RequestParam(value = "endTime", required = false) LocalTime endTime) {
 		return super.getBetween(startDate, startTime, endDate, endTime);
 	}
 }
