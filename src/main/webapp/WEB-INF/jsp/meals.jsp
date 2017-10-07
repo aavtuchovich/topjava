@@ -5,6 +5,8 @@
 <html>
 <jsp:include page="fragments/headTag.jsp"/>
 <body>
+<script type="text/javascript" src="resources/js/datatablesUtil.js" defer></script>
+<script type="text/javascript" src="resources/js/mealDatatables.js" defer></script>
 <jsp:include page="fragments/bodyHeader.jsp"/>
 
 <section>
@@ -32,7 +34,7 @@
     <hr>
     <a href="meals/create"><spring:message code="meal.add"/></a>
     <hr>
-    <table border="1" cellpadding="8" cellspacing="0">
+    <table id="datatable" class="table table-striped display" border="1" cellpadding="8" cellspacing="0">
         <thead>
         <tr>
             <th><spring:message code="meal.dateTime"/></th>
