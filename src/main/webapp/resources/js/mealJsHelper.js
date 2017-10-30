@@ -28,4 +28,14 @@ $(function () {
         ]
     });
     makeEditable();
+
+    $("#btnId").click(function (event) {
+        event.preventDefault();
+        openModel();
+    });
+
+    // Open Bootstrap Modal
+    function openModel() {
+        $("#modalId").modal();
+    }
 });

@@ -32,8 +32,46 @@
         <button type="submit"><spring:message code="meal.filter"/></button>
     </form>
     <hr>
-    <a href="meals/create"><spring:message code="meal.add"/></a>
+    <button type="button" class="btn" id="btnId"><spring:message code="meal.add"/></button>
     <hr>
+    <div class="container">
+        <jsp:useBean id="meal" type="ru.javawebinar.topjava.model.Meal" scope="request"/>
+        <div class="modal fade" id="modalId" role="dialog">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal">&times;</button>
+                        <h4 class="modal-title"><spring:message code="${meal.isNew() ? 'meal.add' : 'meal.edit'}"/></h4>
+                    </div>
+                    <form method="post" action="meals">
+                        <div class="modal-body">
+
+                            <input type="hidden" name="id" value="${meal.id}">
+                            <dl>
+                                <dt><spring:message code="meal.dateTime"/>:</dt>
+                                <dd><input type="datetime-local" value="${meal.dateTime}" name="dateTime"></dd>
+                            </dl>
+                            <dl>
+                                <dt><spring:message code="meal.description"/>:</dt>
+                                <dd><input type="text" value="${meal.description}" size=40 name="description"></dd>
+                            </dl>
+                            <dl>
+                                <dt><spring:message code="meal.calories"/>:</dt>
+                                <dd><input type="number" value="${meal.calories}" name="calories"></dd>
+                            </dl>
+
+                        </div>
+                        <div class="modal-footer">
+                            <button type="submit" class="btn btn-success"><spring:message code="common.save"/></button>
+                            <button type="button" onclick="window.history.back()" class="btn btn-default"
+                                    data-dismiss="modal"><spring:message
+                                    code="common.cancel"/></button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
     <table id="datatable" class="table table-striped display" border="1" cellpadding="8" cellspacing="0">
         <thead>
         <tr>
@@ -43,19 +81,19 @@
             <th><spring:message code="common.actions"/></th>
         </tr>
         </thead>
-        <c:forEach items="${meals}" var="meal">
-            <jsp:useBean id="meal" scope="page" type="ru.javawebinar.topjava.to.MealWithExceed"/>
-            <tr class="${meal.exceed ? 'exceeded' : 'normal'}">
+        <c:forEach items="${meals}" var="mealWithExceed">
+            <jsp:useBean id="mealWithExceed" type="ru.javawebinar.topjava.to.MealWithExceed"/>
+            <tr class="${mealWithExceed.exceed ? 'exceeded' : 'normal'}">
                 <td>
-                        <%--${meal.dateTime.toLocalDate()} ${meal.dateTime.toLocalTime()}--%>
-                        <%--<%=TimeUtil.toString(meal.getDateTime())%>--%>
-                        <%--${fn:replace(meal.dateTime, 'T', ' ')}--%>
-                        ${fn:formatDateTime(meal.dateTime)}
+                        <%--${mealWithExceed.dateTime.toLocalDate()} ${mealWithExceed.dateTime.toLocalTime()}--%>
+                        <%--<%=TimeUtil.toString(mealWithExceed.getDateTime())%>--%>
+                        <%--${fn:replace(mealWithExceed.dateTime, 'T', ' ')}--%>
+                        ${fn:formatDateTime(mealWithExceed.dateTime)}
                 </td>
-                <td>${meal.description}</td>
-                <td>${meal.calories}</td>
-                <td><a href="meals/update?id=${meal.id}"><spring:message code="common.update"/></a>
-                    <br/><a href="meals/delete?id=${meal.id}"><spring:message code="common.delete"/></a></td>
+                <td>${mealWithExceed.description}</td>
+                <td>${mealWithExceed.calories}</td>
+                <td><a href="meals/update?id=${mealWithExceed.id}"><spring:message code="common.update"/></a>
+                    <br/><a href="meals/delete?id=${mealWithExceed.id}"><spring:message code="common.delete"/></a></td>
             </tr>
         </c:forEach>
     </table>
