@@ -6,7 +6,7 @@
 <jsp:include page="fragments/headTag.jsp"/>
 <body>
 <script type="text/javascript" src="resources/js/datatablesUtil.js" defer></script>
-<script type="text/javascript" src="resources/js/mealDatatables.js" defer></script>
+<script type="text/javascript" src="resources/js/mealJsHelper.js" defer></script>
 <jsp:include page="fragments/bodyHeader.jsp"/>
 
 <section>
@@ -62,7 +62,7 @@
 
                         </div>
                         <div class="modal-footer">
-                            <button type="submit" class="btn btn-success"><spring:message code="common.save"/></button>
+                            <button type="submit"  class="btn btn-success"><spring:message code="common.save"/></button>
                             <button type="button" onclick="window.history.back()" class="btn btn-default"
                                     data-dismiss="modal"><spring:message
                                     code="common.cancel"/></button>
@@ -93,7 +93,9 @@
                 <td>${mealWithExceed.description}</td>
                 <td>${mealWithExceed.calories}</td>
                 <td><a href="meals/update?id=${mealWithExceed.id}"><spring:message code="common.update"/></a>
-                    <br/><a href="meals/delete?id=${mealWithExceed.id}"><spring:message code="common.delete"/></a></td>
+                    <br/><a onclick="$.get({url: 'meals/delete?id=' + ${mealWithExceed.id}});"><span class="glyphicon glyphicon-remove"
+                                                                     aria-hidden="true"><spring:message
+                            code="common.delete"/></span></a></td>
             </tr>
         </c:forEach>
     </table>

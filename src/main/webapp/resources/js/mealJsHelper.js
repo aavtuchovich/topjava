@@ -38,4 +38,22 @@ $(function () {
     function openModel() {
         $("#modalId").modal();
     }
+
+    $(function() {
+        /*  Submit form using Ajax */
+        $('button[type=submit][name="addMeal"]').click(function(e) {
+            $.post({
+                url : 'meals',
+                data : $('form[name=createOrUpdateMeal]').serialize(),
+                success : function(res) {
+                    if(res.validated){
+                        //Set response
+                        $('#resultContainer pre code').text(JSON.stringify(res.employee));
+                        $('#resultContainer').show();
+
+                    }
+                }
+            })
+        });
+    });
 });
